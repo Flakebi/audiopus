@@ -50,7 +50,7 @@ use std::{
 };
 
 pub use crate::error::{Error, ErrorCode, Result};
-pub use audiopus_sys as ffi;
+pub use opusic_sys as ffi;
 
 #[repr(i32)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
