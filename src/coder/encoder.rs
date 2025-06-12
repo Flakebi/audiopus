@@ -69,6 +69,22 @@ impl GenericCtl for Encoder {
     fn reset_state(&mut self) -> Result<()> {
         self.encoder_ctl_request(ffi::OPUS_RESET_STATE).map(|_| ())
     }
+
+    /// Gets the encoder's complexity configuration.
+    fn complexity(&self) -> Result<u8> {
+        self.encoder_ctl_request(ffi::OPUS_GET_COMPLEXITY_REQUEST)
+            .map(|v| v as u8)
+    }
+
+    /// Configures the encoder's computational complexity.
+    ///
+    /// **Warning**:
+    /// If `complexity` exceeds 10, [`BadArgument`] will be returned.
+    ///
+    /// [`BadArgument`]: ../error/enum.ErrorCode.html#variant.BadArgument.html
+    fn set_complexity(&mut self, complexity: u8) -> Result<()> {
+        self.set_encoder_ctl_request(ffi::OPUS_SET_COMPLEXITY_REQUEST, i32::from(complexity))
+    }
 }
 
 impl Encoder {
@@ -165,22 +181,6 @@ impl Encoder {
             )
         })
         .map(|n| n as usize)
-    }
-
-    /// Gets the encoder's complexity configuration.
-    pub fn complexity(&self) -> Result<u8> {
-        self.encoder_ctl_request(ffi::OPUS_GET_COMPLEXITY_REQUEST)
-            .map(|v| v as u8)
-    }
-
-    /// Configures the encoder's computational complexity.
-    ///
-    /// **Warning**:
-    /// If `complexity` exceeds 10, [`BadArgument`] will be returned.
-    ///
-    /// [`BadArgument`]: ../error/enum.ErrorCode.html#variant.BadArgument.html
-    pub fn set_complexity(&mut self, complexity: u8) -> Result<()> {
-        self.set_encoder_ctl_request(ffi::OPUS_SET_COMPLEXITY_REQUEST, i32::from(complexity))
     }
 
     /// Gets the encoder's configured application.

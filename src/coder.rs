@@ -24,4 +24,7 @@ pub trait GenericCtl {
     fn sample_rate(&self) -> Result<SampleRate, Error>;
 
     fn reset_state(&mut self) -> Result<(), Error>;
+
+    fn complexity(&self) -> Result<u8, Error>;
+    fn set_complexity(&mut self, complexity: u8) -> Result<(), Error>;
 }

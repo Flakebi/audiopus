@@ -45,6 +45,22 @@ impl GenericCtl for Decoder {
     fn reset_state(&mut self) -> Result<()> {
         self.decoder_ctl_request(ffi::OPUS_RESET_STATE).map(|_| ())
     }
+
+    /// Gets the decoder's complexity configuration.
+    fn complexity(&self) -> Result<u8> {
+        self.decoder_ctl_request(ffi::OPUS_GET_COMPLEXITY_REQUEST)
+            .map(|v| v as u8)
+    }
+
+    /// Configures the decoder's computational complexity.
+    ///
+    /// **Warning**:
+    /// If `complexity` exceeds 10, [`BadArgument`] will be returned.
+    ///
+    /// [`BadArgument`]: ../error/enum.ErrorCode.html#variant.BadArgument.html
+    fn set_complexity(&mut self, complexity: u8) -> Result<()> {
+        self.set_decoder_ctl_request(ffi::OPUS_SET_COMPLEXITY_REQUEST, i32::from(complexity))
+    }
 }
 
 impl Decoder {
@@ -155,7 +171,7 @@ impl Decoder {
     /// Returns [Error::Opus] when Opus encountered a problem
     ///
     /// [Error::Opus]: crate::error::Error::Opus
-    fn decoder_ctl_request(&self, request: i32) -> Result<i32> {
+    pub fn decoder_ctl_request(&self, request: i32) -> Result<i32> {
         let mut value = 0;
 
         let ffi_result = unsafe { ffi::opus_decoder_ctl(self.pointer, request, &mut value) };
@@ -173,7 +189,7 @@ impl Decoder {
     /// Returns [Error::Opus] when Opus encountered a problem
     ///
     /// [Error::Opus]: crate::error::Error::Opus
-    fn set_decoder_ctl_request(&self, request: i32, value: i32) -> Result<()> {
+    pub fn set_decoder_ctl_request(&self, request: i32, value: i32) -> Result<()> {
         try_map_opus_error(unsafe { ffi::opus_decoder_ctl(self.pointer, request, value) })?;
 
         Ok(())
